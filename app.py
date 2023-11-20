@@ -18,7 +18,8 @@ def make_cache_key(*args, **kwargs):
     # Custom cache key function based on API key and keyword
     api_key = request.args.get('api_key', 'default')
     keyword = request.args.get('keyword', 'default')
-    return f"{api_key}:{keyword}"
+    count = request.args.get('count','default')
+    return f"{api_key}:{keyword}:{count}"
 
 @app.route('/')
 def home():
