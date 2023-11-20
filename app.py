@@ -13,13 +13,20 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple', 'CACHE_DEFAULT_TIMEOUT': 3600
 
 valid_api_keys = {os.environ['api_key_for_api']: True}
 
+
+def make_cache_key(*args, **kwargs):
+    # Custom cache key function based on API key and keyword
+    api_key = request.args.get('api_key', 'default')
+    keyword = request.args.get('keyword', 'default')
+    return f"{api_key}:{keyword}"
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
 
 @app.route('/api/yt_play_recom')
-@cache.cached()
+@cache.cached(timeout=3600, key_prefix=make_cache_key)
 def yt_play_recom():
     api_key = request.args.get('api_key')
     if api_key not in valid_api_keys:
@@ -32,7 +39,7 @@ def yt_play_recom():
     return jsonify(result)
 
 @app.route('/api/all_vid_of_play')
-@cache.cached()
+@cache.cached(timeout=3600, key_prefix=make_cache_key)
 def all_vid_of_play():
     api_key = request.args.get('api_key')
     if api_key not in valid_api_keys:
